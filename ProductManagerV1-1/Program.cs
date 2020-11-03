@@ -17,13 +17,18 @@ namespace ProductManagerV1_1
 
             //Console.ReadLine();
 
-            Console.Clear();
+            bool leaveHeadMenu = false;
 
-            Console.SetCursorPosition(38, 1);
-            Console.WriteLine(">>  Product Manager Central Menu  <<");
+            do
+            {
 
-            Console.SetCursorPosition(0, 5);
-            Console.WriteLine($@"
+                Console.Clear();
+
+                Console.SetCursorPosition(38, 1);
+                Console.WriteLine(">>  Product Manager Central Menu  <<");
+
+                Console.SetCursorPosition(0, 5);
+                Console.WriteLine($@"
         1. Categories
 
         2. Articles
@@ -32,87 +37,101 @@ namespace ProductManagerV1_1
 
         Please Choose One of Options above: ");
 
-            Regex menuOptionRegex = new Regex(@"[1-3]$");
-            string menuOption;
-            do
-            {
-                Console.SetCursorPosition(44, 12);
-                menuOption = Console.ReadKey().KeyChar.ToString();
-            } while (!menuOptionRegex.IsMatch(menuOption));
+                Regex menuOptionRegex = new Regex(@"[1-3]$");
+                string menuOption;
+                do
+                {
+                    Console.SetCursorPosition(44, 12);
+                    menuOption = Console.ReadKey().KeyChar.ToString();
+                } while (!menuOptionRegex.IsMatch(menuOption));
 
-            Console.Clear();
+                Console.Clear();
 
-            MenuOptions menuOptions = (MenuOptions)int.Parse(menuOption) - 1;
+                MenuOptions menuOptions = (MenuOptions)int.Parse(menuOption) - 1;
 
-            switch (menuOptions)
-            {
-                case MenuOptions.Categories:
+                switch (menuOptions)
+                {
+                    case MenuOptions.Categories:
 
-                    bool doCaseOneAgain= false;
+                        bool doCaseOneAgain = false;
 
-                    do
-                    {
-                        Console.Clear();
+                        do
+                        {
+                            Console.Clear();
 
-                        Console.SetCursorPosition(38, 1);
-                        Console.WriteLine(">>  Add Categories and Products  <<");
+                            Console.SetCursorPosition(38, 1);
+                            Console.WriteLine(">>  Add Categories and Products  <<");
 
-                        Console.SetCursorPosition(0, 5);
-                        Console.WriteLine($@"
+                            Console.SetCursorPosition(0, 5);
+                            Console.WriteLine($@"
         1. Add category
 
         2. List categories
 
         3. Add product to category
 
+        4. Exit
+
         Please Choose One of Options above: ");
 
-                        //Regex menuOptionRegex = new Regex(@"[1-3]$");
-                        string categoryMenuOption = string.Empty;
-                        do
-                        {
-                           Console.SetCursorPosition(44, 12);
-                            categoryMenuOption = Console.ReadKey().KeyChar.ToString();
-                        } while (!menuOptionRegex.IsMatch(menuOption));
+                            //Regex menuOptionRegex = new Regex(@"[1-3]$");
+                            string categoryMenuOption = string.Empty;
+                            do
+                            {
+                                Console.SetCursorPosition(44, 14);
+                                categoryMenuOption = Console.ReadKey().KeyChar.ToString();
+                            } while (!menuOptionRegex.IsMatch(menuOption));
 
-                        Console.Clear();
-                        CategoryMenuOption categoryMenuOptions = (CategoryMenuOption)int.Parse(categoryMenuOption) - 1;
+                            Console.Clear();
+                            CategoryMenuOption categoryMenuOptions = (CategoryMenuOption)int.Parse(categoryMenuOption) - 1;
 
-                        switch (categoryMenuOptions)
-                        {
-                            case CategoryMenuOption.Addcategory:
-                                AddCategoryMenu();
-                                doCaseOneAgain = true;
-                                break;
-                            case CategoryMenuOption.Listcategories:
-                                break;
-                            case CategoryMenuOption.AddProductToCategory:
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-
-                        Console.WriteLine($@"
+                            switch (categoryMenuOptions)
+                            {
+                                case CategoryMenuOption.Addcategory:
+                                    AddCategoryMenu();
+                                    doCaseOneAgain = true;
+                                    Console.WriteLine($@"
 
 
 
      Press any key to continue ...");
-                        Console.ReadKey();
+                                    Console.ReadKey();
+                                    break;
+                                case CategoryMenuOption.Listcategories:
+                                    break;
+                                case CategoryMenuOption.AddProductToCategory:
+                                    break;
+                                case CategoryMenuOption.Exit:
+                                    doCaseOneAgain = false;
+                                    leaveHeadMenu = true;
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
 
-                    } while (doCaseOneAgain);
+                            
 
-                    
+                        } while (doCaseOneAgain);
 
 
-                    break;
-                case MenuOptions.Articles:
-                    break;
-                case MenuOptions.Exit:
-                    break;
-                    doCaseOneAgain = false;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+
+
+                        break;
+                    case MenuOptions.Articles:
+                        break;
+                    case MenuOptions.Exit:
+
+                        leaveHeadMenu = false;
+
+                        break;
+                        
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+            } while (leaveHeadMenu);
+
+            
 
             Console.ReadLine();
             Console.SetCursorPosition(45, 1);
@@ -266,7 +285,8 @@ namespace ProductManagerV1_1
         {
             Addcategory,
             Listcategories,
-            AddProductToCategory
+            AddProductToCategory,
+            Exit
         }
     }
 }
