@@ -1,7 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using System;
 using System.Data;
-using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -49,8 +48,17 @@ namespace ProductManagerV1_1
             {
                 case MenuOptions.Categories:
 
-                    Console.SetCursorPosition(0, 5);
-                    Console.WriteLine($@"
+                    bool doCaseOneAgain= false;
+
+                    do
+                    {
+                        Console.Clear();
+
+                        Console.SetCursorPosition(38, 1);
+                        Console.WriteLine(">>  Add Categories and Products  <<");
+
+                        Console.SetCursorPosition(0, 5);
+                        Console.WriteLine($@"
         1. Add category
 
         2. List categories
@@ -59,36 +67,49 @@ namespace ProductManagerV1_1
 
         Please Choose One of Options above: ");
 
-                    //Regex menuOptionRegex = new Regex(@"[1-3]$");
-                    string categoryMenuOption = string.Empty;
-                    do
-                    {
-                        Console.SetCursorPosition(44, 12);
-                        categoryMenuOption = Console.ReadKey().KeyChar.ToString();
-                    } while (!menuOptionRegex.IsMatch(menuOption));
+                        //Regex menuOptionRegex = new Regex(@"[1-3]$");
+                        string categoryMenuOption = string.Empty;
+                        do
+                        {
+                           Console.SetCursorPosition(44, 12);
+                            categoryMenuOption = Console.ReadKey().KeyChar.ToString();
+                        } while (!menuOptionRegex.IsMatch(menuOption));
 
-                    Console.Clear();
-                    CategoryMenuOption categoryMenuOptions = (CategoryMenuOption)int.Parse(categoryMenuOption) - 1;
+                        Console.Clear();
+                        CategoryMenuOption categoryMenuOptions = (CategoryMenuOption)int.Parse(categoryMenuOption) - 1;
 
-                    switch (categoryMenuOptions)
-                    {
-                        case CategoryMenuOption.Addcategory:
-                            AddCategoryMenu();
-                            break;
-                        case CategoryMenuOption.Listcategories:
-                            break;
-                        case CategoryMenuOption.AddProductToCategory:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
+                        switch (categoryMenuOptions)
+                        {
+                            case CategoryMenuOption.Addcategory:
+                                AddCategoryMenu();
+                                doCaseOneAgain = true;
+                                break;
+                            case CategoryMenuOption.Listcategories:
+                                break;
+                            case CategoryMenuOption.AddProductToCategory:
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+
+                        Console.WriteLine($@"
+
+
+
+     Press any key to continue ...");
+                        Console.ReadKey();
+
+                    } while (doCaseOneAgain);
 
                     
+
+
                     break;
                 case MenuOptions.Articles:
                     break;
                 case MenuOptions.Exit:
                     break;
+                    doCaseOneAgain = false;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -114,7 +135,7 @@ namespace ProductManagerV1_1
             Console.SetCursorPosition(5, 4);
             Console.WriteLine("Would you Confirm to add this category? Y/N: ");
 
-            
+
             Regex confirmRegex = new Regex(@"[YN]$");
             ConsoleKeyInfo confirm;
             do
@@ -126,29 +147,67 @@ namespace ProductManagerV1_1
 
             if (confirm.Key == ConsoleKey.Y)
             {
-               int addToDB = AddCategories(Categories.Category);
 
-               if (addToDB > 0)
-               {
-                   Console.SetCursorPosition(5, 4);
-                   Console.WriteLine("                                                     ");
-                   Console.SetCursorPosition(5, 4);
+
+                int addToDB = ControlAndAddCategories(Categories.Category);
+
+                if (addToDB > 0)
+                {
+                    Console.SetCursorPosition(5, 4);
+                    Console.WriteLine("                                                     ");
+                    Console.SetCursorPosition(5, 4);
                     Console.WriteLine("A category added to the database.");
-               }
+                }
+                else
+                {
+                    Console.SetCursorPosition(5, 4);
+                    Console.WriteLine("                                                     ");
+                    Console.SetCursorPosition(5, 4);
+                    Console.WriteLine("Category aleady exists.");
+                    Thread.Sleep(2000);
+                }
 
-            }
-            else
-            {
-                Console.SetCursorPosition(5, 4);
-                Console.WriteLine("                                                     ");
-                Console.SetCursorPosition(5, 4);
-                Console.WriteLine("No category added to the database.");
-                Thread.Sleep(2000);
-            }
+            } 
 
-            
+
+
 
             PrintView(5, 10);
+        }
+
+        private static int ControlAndAddCategories(string category)
+        {
+            DataSet dataSet = new DataSet();
+
+            int addToDB = 2;
+
+            string sqlCommandText = "Select * From Categories";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlCommandText, connection);
+
+                dataAdapter.Fill(dataSet, "Categories");
+            }
+
+
+            foreach (DataRow dataRow in dataSet.Tables["Categories"].Rows)
+            {
+               
+                if (dataRow["Category"].ToString() == category)
+                {
+                    addToDB = 0;
+                    break;
+                }
+
+            }
+
+            if (addToDB > 0)
+            {
+                addToDB = AddCategories(category);
+            }
+
+            return addToDB;
         }
 
         private static int AddCategories(string category)
