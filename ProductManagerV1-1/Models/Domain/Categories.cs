@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ProductManagerV1_1
+namespace ProductManagerV1_1.Models.Domain
 {
     public class Categories
     {
