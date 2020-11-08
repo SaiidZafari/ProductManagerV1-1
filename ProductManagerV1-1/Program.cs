@@ -15,7 +15,19 @@ namespace ProductManagerV1_1
         static void Main()
         {
 
-            //    Console.ReadLine();
+            int left = 2;
+            int top = 3;
+
+            
+
+            
+
+            //Console.ReadLine();
+
+            //Console.SetCursorPosition(45, 14);
+            //Console.WriteLine("I am out");
+
+            //Console.ReadLine();
 
             bool leaveHeadMenu = false;
 
@@ -138,16 +150,16 @@ namespace ProductManagerV1_1
 
                                     PrintProductView(71, 8);
 
-                                    Console.SetCursorPosition(5, 24);
-                                    Console.WriteLine($@"Selected ID>");
+                                    Console.SetCursorPosition(5, 23);
+                                    Console.WriteLine($@"Selected ID >");
 
                                     Regex idOptionRegex = new Regex(@"\d$");
                                     string idOption;
                                     do
                                     {
-                                        Console.SetCursorPosition(18, 24);
+                                        Console.SetCursorPosition(19, 23);
                                         Console.WriteLine("       ");
-                                        Console.SetCursorPosition(18, 24);
+                                        Console.SetCursorPosition(19, 23);
                                         idOption = Console.ReadLine();
 
                                     } while (!idOptionRegex.IsMatch(idOption ?? throw new InvalidOperationException()));
@@ -196,9 +208,11 @@ namespace ProductManagerV1_1
                                                 Console.SetCursorPosition(39, 18);
                                                 Console.WriteLine($"{"FK_Categories",10} : {idOption}");
 
-                                                Regex nameRegex = new Regex(@"^[A-Za-z][A-Za-z0-9]+");
+                                                //Regex nameRegex = new Regex(@"^[A-Za-z][A-Za-z0-9]+");
+
+                                                SearchProductsViews();
                                                 
-                                                Regex FKCategoryRegex = new Regex(@"^[0-9]+");
+                                                Regex fkCategoryRegex = new Regex(@"^[0-9]+");
                                                 string id;
                                                 do
                                                 {
@@ -207,69 +221,67 @@ namespace ProductManagerV1_1
                                                     Console.SetCursorPosition(55, 16);
                                                     id = Console.ReadLine();
 
-                                                } while (!FKCategoryRegex.IsMatch(id ?? throw new InvalidOperationException()));
-
-                                               
-                                                string sqlGetRowWithId = "use WebMagasin; Update Products Set FK_Categories = @FkCategory where ID = @IDProduct";
-
-                                                using (SqlConnection connection = new SqlConnection(connectionString))
-                                                {
-                                                    Products.ID = int.Parse(id);
-                                                    Products.FK_Categories = int.Parse(idOption);
-
-                                                    SqlCommand command = new SqlCommand(sqlGetRowWithId, connection);
-                                                    command.Parameters.AddWithValue("@IDProduct", Products.ID.ToString());
-                                                    command.Parameters.AddWithValue("@FkCategory", Products.FK_Categories);
-
-                                                    connection.Open();
-
-                                                    command.ExecuteNonQuery();
-
-                                                }
+                                                } while (!fkCategoryRegex.IsMatch(id ?? throw new InvalidOperationException()));
 
 
-                                                Console.SetCursorPosition(40, 25);
-                                                Console.WriteLine("Do you verify this change? Y/N: ");
+                                                bool answerReact;
+                                                string answer;
                                                 do
                                                 {
-                                                    Console.SetCursorPosition(79, 25);
+                                                    Console.SetCursorPosition(40, 25);
+                                                    Console.WriteLine("Do you verify this change? Y/N: ");
+
+                                                    Console.SetCursorPosition(75, 25);
                                                     Console.WriteLine("                                            ");
-                                                    Console.SetCursorPosition(79, 25);
-                                                    escape = Console.ReadKey();
-                                                    Console.SetCursorPosition(79, 25);
-                                                    Console.WriteLine("                                            ");
+                                                    Console.SetCursorPosition(75, 25);
+                                                    answer = Console.ReadLine().ToUpper();
+                                                    Console.SetCursorPosition(40, 25);
+                                                    Console.WriteLine("                                                               ");
+                                                    if (answer == "Y" || answer == "N")
+                                                    {
+                                                        answerReact = false;
+                                                    }
+                                                    else
+                                                    {
+                                                        answerReact = true;
+                                                    }
 
-                                                } while (escape.Key == ConsoleKey.A);
+                                                } while (answerReact);
 
+                                                if (answer == "Y")
+                                                {
 
+                                                    string sqlGetRowWithId = "use WebMagasin; Update Products Set FK_Categories = @FkCategory where ID = @IDProduct";
 
-                                                //DataSet productDataSet = new DataSet();
+                                                    using (SqlConnection connection = new SqlConnection(connectionString))
+                                                    {
+                                                        Products.ID = int.Parse(id);
+                                                        Products.FK_Categories = int.Parse(idOption);
 
-                                                //string sqlQueryCategory = "Select * From Products";
+                                                        SqlCommand command = new SqlCommand(sqlGetRowWithId, connection);
+                                                        command.Parameters.AddWithValue("@IDProduct", Products.ID.ToString());
+                                                        command.Parameters.AddWithValue("@FkCategory", Products.FK_Categories);
 
-                                                //using (SqlConnection connection = new SqlConnection(connectionString))
-                                                //{
-                                                //    SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQueryCategory, connection);
+                                                        connection.Open();
 
-                                                //    dataAdapter.Fill(productDataSet, "Products");
-                                                //}
+                                                        command.ExecuteNonQuery();
 
-                                                //using (SqlConnection connection = new SqlConnection(connectionString))
-                                                //{
-                                                //    SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQueryCategory, connection);
+                                                    }
 
-                                                //    SqlCommandBuilder builder = new SqlCommandBuilder(dataAdapter);
-
-                                                //    productDataSet.Tables["Products"].Rows.Add(newDataRow);
-
-                                                //    dataAdapter.Update(productDataSet, "Products");
-                                                //}
+                                                }
+                                                else
+                                                {
+                                                    Console.SetCursorPosition(5, 25);
+                                                    Console.WriteLine("No change made ");
+                                                    Thread.Sleep(2000);
+                                                }
+                                                
 
                                                 PrintProductView(71, 8);
-
-                                                Console.SetCursorPosition(20, 25);
-                                                Console.WriteLine("       ");
-
+                                                
+                                                Console.SetCursorPosition(5, 25);
+                                                Console.WriteLine(" Press any key to continue ...      ");
+                                                Console.SetCursorPosition(42, 25);
                                                 Console.ReadKey();
                                                 break;
                                             }
@@ -323,8 +335,8 @@ namespace ProductManagerV1_1
 
                         int successRow;
 
-                        int left = 2;
-                        int top = 3;
+                        //int left = 2;
+                        //int top = 3;
 
                         bool doItAgain;
 
@@ -842,6 +854,127 @@ namespace ProductManagerV1_1
             //Console.ReadLine();
         }
 
+        private static void SearchProductsViews()
+        {
+            bool exit = false;
+
+            string sqlQuerysp;
+
+            do
+            {
+                Console.SetCursorPosition(5, 23);
+                Console.WriteLine("Please choose view base on one of the options below");
+                Console.SetCursorPosition(5, 25);
+                Console.Write("[A]ll [N]ame [M]aterial [C]olor [E]xit:                 ");
+
+                ConsoleKeyInfo viewOption;
+
+                do
+                {
+                    Console.SetCursorPosition(48, 25);
+                    Console.WriteLine("              ");
+                    Console.SetCursorPosition(48, 25);
+                    viewOption = Console.ReadKey();
+
+                } while (viewOption.KeyChar.ToString() == "A" || viewOption.KeyChar.ToString() == "N" || viewOption.KeyChar.ToString() == "M" || viewOption.KeyChar.ToString() == "E");
+                
+                Console.SetCursorPosition(35, 25);
+                Console.WriteLine("                 ");
+                Console.SetCursorPosition(5, 23);
+                Console.WriteLine("                                                       ");
+                Console.SetCursorPosition(5, 25);
+                Console.WriteLine("                                                       ");
+
+                switch (viewOption.Key)
+                {
+                    case ConsoleKey.E:
+                        exit = false;
+                        break;
+                    case ConsoleKey.A:
+                        sqlQuerysp = "Select * From Products ";
+                        PrintProductView(71, 8);
+                        exit = true;
+                        break;
+                    case ConsoleKey.N:
+                        CleanProductView();
+                        Console.SetCursorPosition(5, 25);
+                        Console.WriteLine($@"Please insert the name you wish :");
+                        Console.SetCursorPosition(40, 25);
+                        Products.Name = Console.ReadLine();
+                        Console.SetCursorPosition(40, 25);
+                        Console.WriteLine("                 ");
+                        sqlQuerysp = "Select * From Products where Name = @parameter ";
+                        PrintProductViewsp(71, 8, sqlQuerysp, Products.Name);
+                        exit = true;
+                        break;
+                    case ConsoleKey.M:
+                        CleanProductView();
+                        Console.SetCursorPosition(5, 25);
+                        Console.WriteLine("Please insert the Material you wish :");
+                        Console.SetCursorPosition(43, 25);
+                        Products.Material = Console.ReadLine();
+                        Console.SetCursorPosition(43, 25);
+                        Console.WriteLine("                 ");
+                        sqlQuerysp = "Select * From Products where Material= @parameter ";
+                        PrintProductViewsp(71, 8, sqlQuerysp, Products.Material);
+                        exit = true;
+                        break;
+                    case ConsoleKey.C:
+                        CleanProductView();
+                        Console.SetCursorPosition(5, 25);
+                        Console.WriteLine("Please insert the color you wish :");
+                        Console.SetCursorPosition(40, 25);
+                        Products.Color = Console.ReadLine();
+                        Console.SetCursorPosition(40, 25);
+                        Console.WriteLine("                 ");
+                        sqlQuerysp = "Select * From Products where Color = @parameter ";
+                        PrintProductViewsp(71, 8, sqlQuerysp, Products.Color);
+                        exit = true;
+                        break;
+                    default:
+                        Console.SetCursorPosition(5, 25);
+                        Console.WriteLine("Invalid choice.                                        ");
+                        Thread.Sleep(2000);
+                        exit = true;
+                        break;
+                }
+                Console.SetCursorPosition(5, 23);
+                Console.WriteLine("                                                       ");
+                
+                Console.SetCursorPosition(5, 25);
+                Console.WriteLine("                                                       ");
+               
+            } while (exit);
+
+            Console.SetCursorPosition(5, 23);
+            Console.WriteLine("                                                       ");
+            Console.SetCursorPosition(5, 25);
+            Console.WriteLine("                                                       ");
+
+        }
+
+        private static void CleanProductView()
+        {
+            Console.SetCursorPosition(71, 10);
+            Console.WriteLine("                                              ");
+            Console.SetCursorPosition(71, 11);
+            Console.WriteLine("                                              ");
+            Console.SetCursorPosition(71, 12);
+            Console.WriteLine("                                              ");
+            Console.SetCursorPosition(71, 13);
+            Console.WriteLine("                                              ");
+            Console.SetCursorPosition(71, 14);
+            Console.WriteLine("                                              ");
+            Console.SetCursorPosition(71, 15);
+            Console.WriteLine("                                              ");
+            Console.SetCursorPosition(71, 16);
+            Console.WriteLine("                                              ");
+            Console.SetCursorPosition(71, 17);
+            Console.WriteLine("                                              ");
+            Console.SetCursorPosition(71, 18);
+            Console.WriteLine("                                              ");
+        }
+
 
         private static void AddCategoryMenu()
         {
@@ -1001,6 +1134,31 @@ namespace ProductManagerV1_1
             }
         }
 
+        private static void PrintProductViewsp(int left, int top, string sqlQuery, string value)
+        {
+            DataSet productDataSet = new DataSet();
+
+            //string sqlQuery = "Select * From Products";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
+                dataAdapter.SelectCommand.Parameters.AddWithValue("@parameter", value);
+                dataAdapter.Fill(productDataSet, "Products");
+            }
+            Console.SetCursorPosition(left, top);
+            Console.WriteLine($"{"ID",-4}{"Name",-9}{"Material",-11}{"Color",-8}{"FK_Categories",-10}");
+            Console.SetCursorPosition(left, top + 1);
+            Console.WriteLine(new string('=', 45));
+            int n = 0;
+            foreach (DataRow pDataRow in productDataSet.Tables["Products"].Rows)
+            {
+                Console.SetCursorPosition(left, top + 2 + n);
+                Console.WriteLine($"{pDataRow["ID"],-4}{pDataRow["Name"],-9}{pDataRow["Material"],-11}{pDataRow["Color"],-8}{pDataRow["FK_Categories"],-10}");
+                n++;
+            }
+        }
+
         private enum MenuOptions
         {
             Categories,
@@ -1015,6 +1173,14 @@ namespace ProductManagerV1_1
             AddProductToCategory,
             AddCategoryToCategory,
             Exit
+        }
+
+        private enum ViewList
+        {
+            All,
+            Name,
+            Material,
+            Color
         }
 
 

@@ -14,5 +14,7 @@ namespace ProductManagerV1_1.Models.Domain
         public static int Price { get; set; }
         public static string Description { get; set; }
         public static int FK_Categories { get; set; }
+
+        //public Products(string articleNumber, string name, string material, string color, int price, string description, int fK_Categories) =>(ArticleNumber, Name, Material, Color,Price, Description, FK_Categories) = (articleNumber, name, material, color, price, description, fK_Categories);
     }
 }
