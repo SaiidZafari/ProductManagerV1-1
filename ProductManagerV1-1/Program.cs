@@ -308,21 +308,23 @@ namespace ProductManagerV1_1
 
                                     PrintCategoriesView(5, 8);
 
-                                    PrintSubCategoriesView(71, 8);
-                                    
+                                    PrintSubCategoriesView(64, 8);
+
+                                    PrintChainView(83, 8);
+
                                     Console.SetCursorPosition(5, 23);
                                     Console.WriteLine(@"Selected ID >");
-
+                                    
                                     Regex idOptionsRegex = new Regex(@"\d$");
-                                    string idOptions;
+                                    string idCategory;
                                     do
                                     {
                                         Console.SetCursorPosition(19, 23);
                                         Console.WriteLine("       ");
                                         Console.SetCursorPosition(19, 23);
-                                        idOptions = Console.ReadLine();
+                                        idCategory = Console.ReadLine();
 
-                                    } while (!idOptionsRegex.IsMatch(idOptions ?? throw new InvalidOperationException()));
+                                    } while (!idOptionsRegex.IsMatch(idCategory ?? throw new InvalidOperationException()));
 
                                     DataSet dataSetCategories = new DataSet();
                                     int numberRows;
@@ -339,7 +341,7 @@ namespace ProductManagerV1_1
 
                                         foreach (DataRow dataRow in dataSetCategories.Tables["Categories"].Rows)
                                         {
-                                            if (idOptions == dataRow["ID"].ToString())
+                                            if (idCategory == dataRow["ID"].ToString())
                                             {
                                                 Console.SetCursorPosition(5, 25);
                                                 Console.WriteLine($@"[A] Add Sub Categories:");
@@ -352,36 +354,33 @@ namespace ProductManagerV1_1
 
                                                 } while (escape.Key != ConsoleKey.A);
 
-                                                Console.SetCursorPosition(42, 8);
+                                                Console.SetCursorPosition(39, 8);
                                                 Console.WriteLine($"{"<<< Categories",17} ");
 
-                                                Console.SetCursorPosition(42, 10);
+                                                Console.SetCursorPosition(39, 10);
                                                 Console.WriteLine($"{"ID",10} : {dataRow["ID"],-10}");
-                                                Console.SetCursorPosition(42, 12);
+                                                Console.SetCursorPosition(39, 12);
                                                 Console.WriteLine($"{"Category",10} : {dataRow["Category"],-10}");
 
-                                                Console.SetCursorPosition(42, 14);
+                                                Console.SetCursorPosition(39, 14);
                                                 Console.WriteLine($"{"Sub Categories >>>",20} ");
 
-                                                Console.SetCursorPosition(42, 16);
+                                                Console.SetCursorPosition(39, 16);
                                                 Console.WriteLine($"{"ID",10} :");
-                                                Console.SetCursorPosition(39, 18);
-                                                Console.WriteLine($"{"FK_Categories",10} : {idOptions}");
+                                                Console.SetCursorPosition(36, 18);
+                                                Console.WriteLine($"{"FK_Categories",10} : {idCategory}");
 
-                                                //Regex nameRegex = new Regex(@"^[A-Za-z][A-Za-z0-9]+");
-
-                                                //SearchProductsViews();
-
+                                               
                                                 Regex fkCategoryRegex = new Regex(@"^[0-9]+");
-                                                string id;
+                                                string idSubCategory;
                                                 do
                                                 {
-                                                    Console.SetCursorPosition(55, 16);
+                                                    Console.SetCursorPosition(52, 16);
                                                     Console.WriteLine("                      ");
-                                                    Console.SetCursorPosition(55, 16);
-                                                    id = Console.ReadLine();
+                                                    Console.SetCursorPosition(52, 16);
+                                                    idSubCategory = Console.ReadLine();
 
-                                                } while (!fkCategoryRegex.IsMatch(id ?? throw new InvalidOperationException()));
+                                                } while (!fkCategoryRegex.IsMatch(idSubCategory ?? throw new InvalidOperationException()));
 
 
                                                 bool answerReact;
@@ -410,23 +409,55 @@ namespace ProductManagerV1_1
 
                                                 if (answer == "Y")
                                                 {
+                                                    Categories.ID = int.Parse(idCategory);
+                                                    SubCategories.ID = int.Parse(idSubCategory);
 
-                                                    string sqlSetRowWithId = "use WebMagasin; Update SubCategories Set FK_Category = @FkCategory where ID = @IDSubCategory";
+                                                    string sqlQueryGetInfo =
+                                                        "use WebMagasin; Select * From CategoriesBridgeSub where FK_Categories = @IdCategories and FK_SubCategories = @IdSubCategories";
+                                                    int numberOfRow;
 
-                                                    using (SqlConnection connection = new SqlConnection(connectionString))
+                                                    using (SqlConnection con = new SqlConnection(connectionString))
                                                     {
-                                                        SubCategories.ID = int.Parse(id);
-                                                        SubCategories.FK_Category = int.Parse(idOptions);
+                                                        SqlDataAdapter da = new SqlDataAdapter(sqlQueryGetInfo, con);
+                                                        da.SelectCommand.Parameters.AddWithValue("@IdCategories" , Categories.ID.ToString());
+                                                        da.SelectCommand.Parameters.AddWithValue("@IdSubCategories" , SubCategories.ID.ToString());
 
-                                                        SqlCommand cmd = new SqlCommand(sqlSetRowWithId, connection);
-                                                        cmd.Parameters.AddWithValue("@IDSubCategory", SubCategories.ID.ToString());
-                                                        cmd.Parameters.AddWithValue("@FkCategory", SubCategories.FK_Category);
+                                                        DataSet ds = new DataSet();
 
-                                                        connection.Open();
-
-                                                        cmd.ExecuteNonQuery();
-
+                                                        numberOfRow = da.Fill(ds);
                                                     }
+
+                                                    if (numberOfRow > 0)
+                                                    {
+                                                        Console.SetCursorPosition(40, 25);
+                                                        Console.WriteLine("The categories are already related !");
+                                                        
+                                                        Thread.Sleep(2000);
+
+                                                        Console.SetCursorPosition(40, 25);
+                                                        Console.WriteLine("                                           ");
+                                                    }
+                                                    else
+                                                    {
+                                                        string sqlChainCategoies = "use WebMagasin; insert into CategoriesBridgeSub Values(@IdCategory, @IDSubCategory)";
+
+                                                        using (SqlConnection connection = new SqlConnection(connectionString))
+                                                        {
+                                                            SubCategories.ID = int.Parse(idSubCategory);
+                                                            Categories.ID = int.Parse(idCategory);
+
+                                                            SqlCommand cmd = new SqlCommand(sqlChainCategoies, connection);
+                                                            cmd.Parameters.AddWithValue("@IdCategory", Categories.ID);
+                                                            cmd.Parameters.AddWithValue("@IdSubCategory", SubCategories.ID);
+
+                                                            connection.Open();
+
+                                                            cmd.ExecuteNonQuery();
+
+                                                        }
+                                                    }
+
+
 
                                                 }
                                                 else
@@ -435,9 +466,8 @@ namespace ProductManagerV1_1
                                                     Console.WriteLine("No change made ");
                                                     Thread.Sleep(2000);
                                                 }
-
-                                                PrintSubCategoriesView(71, 8);
-                                                //PrintProductView(71, 8);
+                                                
+                                                PrintChainView(83, 8);
 
                                                 Console.SetCursorPosition(5, 25);
                                                 Console.WriteLine(" Press any key to continue ...      ");
@@ -460,10 +490,6 @@ namespace ProductManagerV1_1
 
                                     doCaseOneAgain = true;
 
-
-                                    //Console.SetCursorPosition(5, 24);
-                                    //Console.WriteLine("Presss any key to continue...");
-                                    //Console.ReadKey();
                                     break;
                                 case CategoryMenuOption.Exit:
                                     doCaseOneAgain = false;
@@ -484,13 +510,9 @@ namespace ProductManagerV1_1
 
 
                         DataSet dataSet = ConnectionToSql(connectionString, sqlQuery);
-                        //Products products = new Products();
-
+                        
                         int successRow;
-
-                        //int left = 2;
-                        //int top = 3;
-
+                        
                         bool doItAgain;
 
                         ConsoleKeyInfo keySelectEdit = default;
@@ -991,12 +1013,19 @@ namespace ProductManagerV1_1
 
             Console.WriteLine($@"
 
-          Categories                        Sub Categories                         Products   ");
-            PrintCategoriesView(5, 7);
-            PrintProductView(71, 7);
-            PrintSubCategoriesView(39, 7);
+          Categories                         CategoriesBridgeSub                             Sub Categories   ");
+            PrintCategoriesView(5, 6);
+
+            PrintChainView(43, 6);
+
+            PrintSubCategoriesView(95, 6);
+
+            Console.SetCursorPosition(35,15);
+            Console.WriteLine("Products");
+            PrintProductView(20, 17);
+            
             Console.SetCursorPosition(0, 24);
-            //Console.ReadLine();
+           
         }
 
         private static void SearchProductsViews()
@@ -1303,6 +1332,30 @@ namespace ProductManagerV1_1
             }
         }
 
+        private static void PrintChainView(int left, int top)
+        {
+            DataSet chainDataSet = new DataSet();
+
+            string sqlQuery = "Select * From CategoriesBridgeSub";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
+
+                dataAdapter.Fill(chainDataSet, "Products");
+            }
+            Console.SetCursorPosition(left, top);
+            Console.WriteLine($"{"ID",-4}{"FK_Categories",-15}{"FK_SubCategories",-10}");
+            Console.SetCursorPosition(left, top + 1);
+            Console.WriteLine(new string('=', 35));
+            int n = 0;
+            foreach (DataRow chainDataRow in chainDataSet.Tables["Products"].Rows)
+            {
+                Console.SetCursorPosition(left, top + 2 + n);
+                Console.WriteLine($"{chainDataRow["ID"],-4}{chainDataRow["FK_Categories"],-15}{chainDataRow["FK_SubCategories"],-10}");
+                n++;
+            }
+        }
 
         private static void PrintSubCategoriesView(int left, int top)
         {
@@ -1317,14 +1370,14 @@ namespace ProductManagerV1_1
                 dataAdapter.Fill(productDataSet, "Products");
             }
             Console.SetCursorPosition(left, top);
-            Console.WriteLine($"{"ID",-4}{"Name",-11}{"FK_Category",-10}");
+            Console.WriteLine($"{"ID",-4}{"Name",-11}");
             Console.SetCursorPosition(left, top + 1);
-            Console.WriteLine(new string('=', 26));
+            Console.WriteLine(new string('=', 13));
             int n = 0;
             foreach (DataRow pDataRow in productDataSet.Tables["Products"].Rows)
             {
                 Console.SetCursorPosition(left, top + 2 + n);
-                Console.WriteLine($"{pDataRow["ID"],-4}{pDataRow["Name"],-11}{pDataRow["FK_Category"],-10}");
+                Console.WriteLine($"{pDataRow["ID"],-4}{pDataRow["Name"],-11}");
                 n++;
             }
         }

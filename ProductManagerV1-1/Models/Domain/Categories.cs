@@ -6,7 +6,7 @@ namespace ProductManagerV1_1.Models.Domain
 {
     public class Categories
     {
-
+        public static int ID { get; set; }
         public static string Category { get; set; }
         public static int Inventory { get; set; }
 
