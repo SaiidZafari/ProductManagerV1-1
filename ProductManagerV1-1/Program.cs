@@ -18,9 +18,9 @@ namespace ProductManagerV1_1
             int left = 2;
             int top = 3;
 
-            
 
-            
+
+
 
             //Console.ReadLine();
 
@@ -199,7 +199,7 @@ namespace ProductManagerV1_1
                                                 Console.WriteLine($"{"ID",10} : {dataRow["ID"],-10}");
                                                 Console.SetCursorPosition(42, 12);
                                                 Console.WriteLine($"{"Category",10} : {dataRow["Category"],-10}");
-                                                
+
                                                 Console.SetCursorPosition(42, 14);
                                                 Console.WriteLine($"{"Proucts >>>",17} ");
 
@@ -211,7 +211,7 @@ namespace ProductManagerV1_1
                                                 //Regex nameRegex = new Regex(@"^[A-Za-z][A-Za-z0-9]+");
 
                                                 SearchProductsViews();
-                                                
+
                                                 Regex fkCategoryRegex = new Regex(@"^[0-9]+");
                                                 string id;
                                                 do
@@ -275,10 +275,10 @@ namespace ProductManagerV1_1
                                                     Console.WriteLine("No change made ");
                                                     Thread.Sleep(2000);
                                                 }
-                                                
+
 
                                                 PrintProductView(71, 8);
-                                                
+
                                                 Console.SetCursorPosition(5, 25);
                                                 Console.WriteLine(" Press any key to continue ...      ");
                                                 Console.SetCursorPosition(42, 25);
@@ -314,7 +314,7 @@ namespace ProductManagerV1_1
 
                                     Console.SetCursorPosition(5, 23);
                                     Console.WriteLine(@"Selected ID >");
-                                    
+
                                     Regex idOptionsRegex = new Regex(@"\d$");
                                     string idCategory;
                                     do
@@ -370,7 +370,7 @@ namespace ProductManagerV1_1
                                                 Console.SetCursorPosition(36, 18);
                                                 Console.WriteLine($"{"FK_Categories",10} : {idCategory}");
 
-                                               
+
                                                 Regex fkCategoryRegex = new Regex(@"^[0-9]+");
                                                 string idSubCategory;
                                                 do
@@ -419,8 +419,8 @@ namespace ProductManagerV1_1
                                                     using (SqlConnection con = new SqlConnection(connectionString))
                                                     {
                                                         SqlDataAdapter da = new SqlDataAdapter(sqlQueryGetInfo, con);
-                                                        da.SelectCommand.Parameters.AddWithValue("@IdCategories" , Categories.ID.ToString());
-                                                        da.SelectCommand.Parameters.AddWithValue("@IdSubCategories" , SubCategories.ID.ToString());
+                                                        da.SelectCommand.Parameters.AddWithValue("@IdCategories", Categories.ID.ToString());
+                                                        da.SelectCommand.Parameters.AddWithValue("@IdSubCategories", SubCategories.ID.ToString());
 
                                                         DataSet ds = new DataSet();
 
@@ -431,7 +431,7 @@ namespace ProductManagerV1_1
                                                     {
                                                         Console.SetCursorPosition(40, 25);
                                                         Console.WriteLine("The categories are already related !");
-                                                        
+
                                                         Thread.Sleep(2000);
 
                                                         Console.SetCursorPosition(40, 25);
@@ -466,7 +466,7 @@ namespace ProductManagerV1_1
                                                     Console.WriteLine("No change made ");
                                                     Thread.Sleep(2000);
                                                 }
-                                                
+
                                                 PrintChainView(83, 8);
 
                                                 Console.SetCursorPosition(5, 25);
@@ -510,9 +510,9 @@ namespace ProductManagerV1_1
 
 
                         DataSet dataSet = ConnectionToSql(connectionString, sqlQuery);
-                        
+
                         int successRow;
-                        
+
                         bool doItAgain;
 
                         ConsoleKeyInfo keySelectEdit = default;
@@ -538,9 +538,9 @@ namespace ProductManagerV1_1
                             string option;
                             do
                             {
-                                Console.SetCursorPosition(48, 9);
+                                Console.SetCursorPosition(48, 10);
                                 Console.WriteLine("  ");
-                                Console.SetCursorPosition(48, 9);
+                                Console.SetCursorPosition(48, 10);
                                 option = Console.ReadKey().KeyChar.ToString().ToUpper();
                             } while (!optionRegex.IsMatch(option));
 
@@ -640,25 +640,24 @@ namespace ProductManagerV1_1
 
                                         Console.SetCursorPosition(left, top + 10);
                                         Console.WriteLine($"Would you please confirm the Information above? Y/N ");
+                                        
 
-                                        //ConsoleKeyInfo answer = Console.ReadKey();
-
-
-
-                                        Regex confirmRegex = new Regex(@"[YN]$");
+                                        Regex confirmRegex = new Regex(@"[YyNn]$");
                                         ConsoleKeyInfo confirm;
                                         do
                                         {
                                             Console.SetCursorPosition(left + 52, top + 10);
                                             confirm = Console.ReadKey(true);
 
-                                        } while (!confirmRegex.IsMatch(confirm.Key.ToString()));
+                                        } while (!confirmRegex.IsMatch(confirm.KeyChar.ToString()));
 
 
                                         Console.SetCursorPosition(left, top + 10);
                                         Console.WriteLine($"                                                     ");
 
-                                        DataRow newDataRow = dataSet.Tables["Products"].NewRow();
+                                        DataSet editDataSet = new DataSet();
+
+                                        DataRow newDataRow = editDataSet.Tables["Products"].NewRow();
 
                                         newDataRow["ArticleNumber"] = Products.ArticleNumber;
                                         newDataRow["Name"] = Products.Name;
@@ -716,229 +715,263 @@ namespace ProductManagerV1_1
 
                                         if (Products.ArticleNumber != "Z999Z99")
                                         {
-                                            int articleIndex = 0;
+                                            int articleIndex = -1;
+
 
                                             foreach (DataRow dataRow in dataSet.Tables["Products"].Rows)
                                             {
                                                 if (dataRow["ArticleNumber"].ToString() == Products.ArticleNumber)
                                                 {
                                                     articleIndex = dataSet.Tables["Products"].Rows.IndexOf(dataRow);
+                                                    break;
                                                 }
+                                                
                                             }
 
-                                            DataRow dataRows = dataSet.Tables["Products"].Rows[articleIndex];
-                                            Console.Clear();
-                                            Console.SetCursorPosition(left + 30, top);
-                                            Console.WriteLine($"Search result for Article Number {Products.ArticleNumber} :");
-
-                                            if (dataSet.Tables["Products"].Rows.Count == 0)
+                                            if (articleIndex == -1)
                                             {
                                                 Console.SetCursorPosition(left, top + 2);
                                                 Console.WriteLine("Article didn't find in this database.                       ");
-
-                                                Console.SetCursorPosition(left, top + 4);
-                                                Console.Write("Press any key to continue .... ");
-
-                                                Console.SetCursorPosition(left + 31, top + 4);
-                                                Console.ReadKey();
+                                                Thread.Sleep(2000);
+                                                Console.SetCursorPosition(left, top + 2);
+                                                Console.WriteLine("                                                      ");
+                                                break;
                                             }
                                             else
                                             {
 
-                                                Console.SetCursorPosition(left, top + 2);
-                                                Console.WriteLine($"{"Article number : ",17}{dataRows["ArticleNumber"]}");
+                                                DataRow dataRows = dataSet.Tables["Products"].Rows[articleIndex];
+                                                Console.Clear();
+                                                Console.SetCursorPosition(left + 30, top);
+                                                Console.WriteLine($"Search result for Article Number {Products.ArticleNumber} :");
 
-                                                Console.SetCursorPosition(left + 40, top + 2);
-                                                Console.WriteLine($"{"Material : ",17}{dataRows["Material"]}");
-
-                                                Console.SetCursorPosition(left, top + 4);
-                                                Console.WriteLine($"{"Name : ",17}{dataRows["Name"]}");
-
-                                                Console.SetCursorPosition(left+40, top + 4);
-                                                Console.WriteLine($"{"Color : ",17}{dataRows["Color"]}");
-
-                                                Console.SetCursorPosition(left, top + 6);
-                                                Console.WriteLine($"{"Price : ",17}{dataRows["Price"]}");
-
-                                                Console.SetCursorPosition(left + 40, top + 6);
-                                                Console.WriteLine($"{"Description : ",17}{dataRows["Description"]}");
-
-                                                Console.SetCursorPosition(left, top + 12);
-                                                ProductsView(ConnectionToSql(connectionString, sqlQuery));
-
-                                                Console.SetCursorPosition(left, top + 26);
-                                                Console.WriteLine($"[E] Edit [D] Delete [Esc] Main menu");
-
-                                                Console.SetCursorPosition(left + 36, top + 26);
-
-                                                Regex keySelectEditRegex = new Regex(@"(E|D|Escape)$");
-
-                                                do
+                                                if (dataSet.Tables["Products"].Rows.Count == 0)
                                                 {
-                                                    keySelectEdit = Console.ReadKey(true);
+                                                    Console.SetCursorPosition(left, top + 2);
+                                                    Console.WriteLine("Article didn't find in this database.                       ");
 
-                                                } while (!keySelectEditRegex.IsMatch(keySelectEdit.Key.ToString()));
+                                                    Console.SetCursorPosition(left, top + 4);
+                                                    Console.Write("Press any key to continue .... ");
 
-                                                if (keySelectEdit.Key == ConsoleKey.Escape)
-                                                {
-                                                    //doItAgain = true;
-                                                    break;
+                                                    Console.SetCursorPosition(left + 31, top + 4);
+                                                    Console.ReadKey();
                                                 }
-                                                else if (keySelectEdit.Key == ConsoleKey.D)
+                                                else
                                                 {
-                                                    Console.SetCursorPosition(left, top + 26);
-                                                    Console.Write("Are you sue you want to delete this article? Y/N: ");
 
-                                                    Regex keySelectYoNRegex = new Regex(@"[YN]$");
-                                                    ConsoleKeyInfo keyYoN;
+                                                    Console.SetCursorPosition(left, top + 2);
+                                                    Console.WriteLine($"{"Article number : ",17}{dataRows["ArticleNumber"]}");
+
+                                                    Console.SetCursorPosition(left + 40, top + 2);
+                                                    Console.WriteLine($"{"Material : ",17}{dataRows["Material"]}");
+
+                                                    Console.SetCursorPosition(left, top + 4);
+                                                    Console.WriteLine($"{"Name : ",17}{dataRows["Name"]}");
+
+                                                    Console.SetCursorPosition(left + 40, top + 4);
+                                                    Console.WriteLine($"{"Color : ",17}{dataRows["Color"]}");
+
+                                                    Console.SetCursorPosition(left, top + 6);
+                                                    Console.WriteLine($"{"Price : ",17}{dataRows["Price"]}");
+
+                                                    Console.SetCursorPosition(left + 40, top + 6);
+                                                    Console.WriteLine($"{"Description : ",17}{dataRows["Description"]}");
+
+                                                    Console.SetCursorPosition(left, top + 12);
+                                                    ProductsView(ConnectionToSql(connectionString, sqlQuery));
+
+                                                    Console.SetCursorPosition(left, top + 26);
+                                                    Console.WriteLine($"[E] Edit [D] Delete [Esc] Main menu");
+
+                                                    Console.SetCursorPosition(left + 36, top + 26);
+
+                                                    Regex keySelectEditRegex = new Regex(@"(E|D|Escape)$");
+
                                                     do
                                                     {
-                                                        Console.SetCursorPosition(left + 50, top + 26);
-                                                        keyYoN = Console.ReadKey(true);
+                                                        keySelectEdit = Console.ReadKey(true);
 
-                                                    } while (!keySelectYoNRegex.IsMatch(keyYoN.Key.ToString()));
+                                                    } while (!keySelectEditRegex.IsMatch(keySelectEdit.Key.ToString()));
 
-
-                                                    Console.SetCursorPosition(left, top + 26);
-                                                    Console.WriteLine(
-                                                        $"[E] Edit [D] Delete [Esc] Main menu                           ");
-
-
-                                                    if (keyYoN.Key == ConsoleKey.Y)
+                                                    if (keySelectEdit.Key == ConsoleKey.Escape)
                                                     {
-                                                        DeleteArticle(connectionString, sqlQuery, Products.ArticleNumber);
-
+                                                        //doItAgain = true;
+                                                        break;
                                                     }
-                                                }
-                                                else if (keySelectEdit.Key == ConsoleKey.E)
-                                                {
-
-
-                                                    DataRow editDataRow = dataSet.Tables["Products"].Rows[articleIndex];
-
-                                                    bool keyOption;
-                                                    do
+                                                    else if (keySelectEdit.Key == ConsoleKey.D)
                                                     {
-                                                        Products.Name = dataRows["Name"].ToString();
+                                                        Console.SetCursorPosition(left, top + 26);
+                                                        Console.Write("Are you sue you want to delete this article? Y/N: ");
 
-                                                        Products.Price = Convert.ToInt32(dataRows["Price"]);
+                                                        Regex keySelectYoNRegex = new Regex(@"[YN]$");
+                                                        ConsoleKeyInfo keyYoN;
+                                                        do
+                                                        {
+                                                            Console.SetCursorPosition(left + 50, top + 26);
+                                                            keyYoN = Console.ReadKey(true);
 
-                                                        Products.Description = dataRows["Description"].ToString();
+                                                        } while (!keySelectYoNRegex.IsMatch(keyYoN.Key.ToString()));
 
 
                                                         Console.SetCursorPosition(left, top + 26);
-                                                        Console.WriteLine(      
-                                                            $"[N]ame [P]rice [M]aterial [C]olor [D]escription  [Q]uit  Please choose your Option to Edit: ");
-                                                        Console.SetCursorPosition(left + 92, top + 26);
-                                                        ConsoleKeyInfo keyInfo = Console.ReadKey();
+                                                        Console.WriteLine(
+                                                            $"[E] Edit [D] Delete [Esc] Main menu                           ");
 
-                                                        if (keyInfo.Key == ConsoleKey.Q)
+
+                                                        if (keyYoN.Key == ConsoleKey.Y)
                                                         {
-                                                            doItAgain = false;
-                                                            keyOption = false;
-                                                            //break;
+                                                            DeleteArticle(connectionString, sqlQuery, Products.ArticleNumber);
+
                                                         }
-                                                        else
-                                                        {
-                                                            if (keyInfo.Key == ConsoleKey.N)
-                                                            {
-                                                                Products.Name = AddName(left - 1, top);
-                                                                keyOption = true;
-                                                            }
-                                                            else if (keyInfo.Key == ConsoleKey.P)
-                                                            {
-                                                                Products.Price = AddPrice(left - 1, top);
-                                                                keyOption = true;
-                                                            }
-                                                            else if (keyInfo.Key == ConsoleKey.M)
-                                                            {
-                                                                Products.Material = AddMaterial(left - 1, top);
-                                                                keyOption = true;
-                                                            }
-                                                            else if (keyInfo.Key == ConsoleKey.C)
-                                                            {
-                                                                Products.Color = AddColor(left - 1, top);
-                                                                keyOption = true;
-                                                            }
-                                                            else if (keyInfo.Key == ConsoleKey.D)
-                                                            {
-                                                                Products.Description = AddDescription(left - 1, top);
-                                                                keyOption = true;
-                                                            }
-                                                            else
-                                                            {
-                                                                Console.SetCursorPosition(left + 30, top + 26);
-                                                                Console.WriteLine("Invalid Option. Try again...");
-                                                                keyOption = true;
-                                                            }
-                                                        }
+                                                    }
+                                                    else if (keySelectEdit.Key == ConsoleKey.E)
+                                                    {
 
 
-                                                        if (keyInfo.Key != ConsoleKey.Q)
+                                                        //DataRow oldDataRow = dataSet.Tables["Products"].Rows[articleIndex];
+
+                                                        bool keyOption = false;
+                                                        do
                                                         {
-                                                            editDataRow["ArticleNumber"] = Products.ArticleNumber;
-                                                            editDataRow["Name"] = Products.Name;
-                                                            editDataRow["Price"] = Products.Price;
-                                                            editDataRow["Material"] = Products.Material;
-                                                            editDataRow["Color"] = Products.Color;
-                                                            editDataRow["Description"] = Products.Description;
+                                                            Products.Name = dataRows["Name"].ToString();
+
+                                                            Products.Price = Convert.ToInt32(dataRows["Price"]);
+
+                                                            Products.Material = dataRows["Material"].ToString();
+
+                                                            Products.Color = dataRows["Color"].ToString();
+
+                                                            Products.Description = dataRows["Description"].ToString();
+
 
                                                             Console.SetCursorPosition(left, top + 26);
-                                                            Console.Write(
-                                                                "Would you verify this change? Y/N :                                                     ");
+                                                            Console.WriteLine(
+                                                                $"[N]ame [P]rice [M]aterial [C]olor [D]escription  [Q]uit  Please choose your Option to Edit: ");
 
-                                                            Regex keySelectYoNRegex = new Regex(@"[YN]$");
-                                                            ConsoleKeyInfo keyYoN;
+
+                                                            Regex keyInfoRegex = new Regex(@"[NnPpMmCcDdQq]$");
+                                                            ConsoleKeyInfo keyInfo;
                                                             do
                                                             {
-                                                                Console.SetCursorPosition(left + 37, top + 26);
-                                                                keyYoN = Console.ReadKey(true);
+                                                                Console.SetCursorPosition(left + 92, top + 26);
+                                                                Console.WriteLine("     ");
+                                                                Console.SetCursorPosition(left + 92, top + 26);
+                                                                keyInfo = Console.ReadKey();
+                                                            } while (!keyInfoRegex.IsMatch(keyInfo.KeyChar.ToString()));
 
-                                                            } while (!keySelectYoNRegex.IsMatch(keyYoN.Key.ToString()));
+                                                            Console.SetCursorPosition(left + 92, top + 26);
+                                                            Console.WriteLine("                 ");
 
-                                                            if (keyYoN.Key == ConsoleKey.Y)
+                                                            switch (keyInfo.Key)
                                                             {
-                                                                using (SqlConnection connection = new SqlConnection(connectionString))
-                                                                {
-                                                                    SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
-
-                                                                    SqlCommandBuilder builder = new SqlCommandBuilder(dataAdapter);
-                                                                    
-                                                                    dataAdapter.Fill(dataSet, "Products");
-
-                                                                    successRow = dataAdapter.Update(dataSet, "Products");
-                                                                }
-
-                                                                if (successRow > 0)
-                                                                {
-                                                                    Console.SetCursorPosition(left, top + 10);
-                                                                    Console.Write(" This Article is registered !");
+                                                                case ConsoleKey.Q:
+                                                                    doItAgain = false;
+                                                                    keyOption = false;
+                                                                    break;
+                                                                case ConsoleKey.N:
+                                                                    Products.Name = AddName(left - 1, top);
+                                                                    keyOption = true;
+                                                                    break;
+                                                                case ConsoleKey.P:
+                                                                    Products.Price = AddPrice(left - 1, top);
+                                                                    keyOption = true;
+                                                                    break;
+                                                                case ConsoleKey.M:
+                                                                    Products.Material = AddMaterial(left - 1, top);
+                                                                    keyOption = true;
+                                                                    break;
+                                                                case ConsoleKey.C:
+                                                                    Products.Color = AddColor(left - 1, top);
+                                                                    keyOption = true;
+                                                                    break;
+                                                                case ConsoleKey.D:
+                                                                    Products.Description = AddDescription(left - 1, top);
+                                                                    keyOption = true;
+                                                                    break;
+                                                                default:
+                                                                    Console.SetCursorPosition(left + 92, top + 26);
+                                                                    Console.WriteLine("Invalid key ...");
                                                                     Thread.Sleep(2000);
+                                                                    Console.SetCursorPosition(left + 92, top + 26);
+                                                                    Console.WriteLine("                 ");
+                                                                    break;
+                                                            }
+
+                                                            if (keyInfo.Key == ConsoleKey.Q)
+                                                            {
+                                                                doItAgain = false;
+                                                            }
+
+                                                            else
+                                                            {
+                                                                DataRow editDataRow = dataSet.Tables["Products"].Rows[articleIndex];
+                                                                editDataRow["ArticleNumber"] = Products.ArticleNumber;
+                                                                editDataRow["Name"] = Products.Name;
+                                                                editDataRow["Price"] = Products.Price;
+                                                                editDataRow["Material"] = Products.Material;
+                                                                editDataRow["Color"] = Products.Color;
+                                                                editDataRow["Description"] = Products.Description;
+
+                                                                Console.SetCursorPosition(left, top + 26);
+                                                                Console.Write(
+                                                                    "Would you verify this change? Y/N :                                                                      ");
+
+                                                                Regex keySelectYoNRegex = new Regex(@"[YN]$");
+                                                                ConsoleKeyInfo keyYoN;
+                                                                do
+                                                                {
+                                                                    Console.SetCursorPosition(left + 37, top + 26);
+                                                                    keyYoN = Console.ReadKey(true);
+
+                                                                } while (!keySelectYoNRegex.IsMatch(keyYoN.Key.ToString()));
+
+                                                                if (keyYoN.Key == ConsoleKey.Y)
+                                                                {
+                                                                    using (SqlConnection connection = new SqlConnection(connectionString))
+                                                                    {
+                                                                        SqlDataAdapter dataAdapter = new SqlDataAdapter(sqlQuery, connection);
+
+                                                                        SqlCommandBuilder builder = new SqlCommandBuilder(dataAdapter);
+
+                                                                        dataAdapter.Fill(dataSet, "Products");
+
+                                                                        successRow = dataAdapter.Update(dataSet, "Products");
+                                                                    }
+
+                                                                    if (successRow > 0)
+                                                                    {
+                                                                        Console.SetCursorPosition(left, top + 10);
+                                                                        Console.Write(" This Article is registered !");
+                                                                        Thread.Sleep(2000);
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        Console.SetCursorPosition(left, top + 10);
+                                                                        Console.Write(" This Article didn't registered !");
+                                                                        Thread.Sleep(2000);
+                                                                    }
+
+                                                                    Console.SetCursorPosition(left, top + 10);
+                                                                    Console.WriteLine("                                      ");
+                                                                    Console.SetCursorPosition(left, top + 12);
+                                                                    ProductsView(ConnectionToSql(connectionString, sqlQuery));
+                                                                    doItAgain = true;
                                                                 }
                                                                 else
                                                                 {
-                                                                    Console.SetCursorPosition(left, top + 10);
-                                                                    Console.Write(" This Article didn't registered !");
-                                                                    Thread.Sleep(2000);
+                                                                    doItAgain = true;
                                                                 }
-
-                                                                Console.SetCursorPosition(left, top + 10);
-                                                                Console.WriteLine("                                      ");
-                                                                Console.SetCursorPosition(left, top + 12);
-                                                                ProductsView(ConnectionToSql(connectionString, sqlQuery));
-                                                                doItAgain = true;
                                                             }
-                                                            else
-                                                            {
-                                                                doItAgain = true;
-                                                            }
-                                                        }
 
 
-                                                    } while (keyOption);
+                                                        } while (keyOption);
+                                                    }
+
                                                 }
 
                                             }
+
+                                            
                                         }
                                         else
                                         {
@@ -992,7 +1025,7 @@ namespace ProductManagerV1_1
                         ProductsView(ConnectionToSql(connectionString, sqlQuery));
 
                         Thread.Sleep(3000);
-                        
+
                         leaveHeadMenu = true;
                         break;
                     case MenuOptions.Exit:
@@ -1013,19 +1046,21 @@ namespace ProductManagerV1_1
 
             Console.WriteLine($@"
 
-          Categories                         CategoriesBridgeSub                             Sub Categories   ");
+          Categories                                 CategoriesBridgeSub                     Sub Categories   ");
             PrintCategoriesView(5, 6);
 
-            PrintChainView(43, 6);
+            PrintChainView(46, 6);
 
             PrintSubCategoriesView(95, 6);
 
-            Console.SetCursorPosition(35,15);
+            Console.SetCursorPosition(35, 15);
             Console.WriteLine("Products");
             PrintProductView(20, 17);
-            
+
             Console.SetCursorPosition(0, 24);
-           
+
+            Console.WriteLine("\n");
+
         }
 
         private static void SearchProductsViews()
@@ -1051,7 +1086,7 @@ namespace ProductManagerV1_1
                     viewOption = Console.ReadKey();
 
                 } while (viewOption.KeyChar.ToString() == "A" || viewOption.KeyChar.ToString() == "N" || viewOption.KeyChar.ToString() == "M" || viewOption.KeyChar.ToString() == "E");
-                
+
                 Console.SetCursorPosition(35, 25);
                 Console.WriteLine("                 ");
                 Console.SetCursorPosition(5, 23);
@@ -1113,10 +1148,10 @@ namespace ProductManagerV1_1
                 }
                 Console.SetCursorPosition(5, 23);
                 Console.WriteLine("                                                       ");
-                
+
                 Console.SetCursorPosition(5, 25);
                 Console.WriteLine("                                                       ");
-               
+
             } while (exit);
 
             Console.SetCursorPosition(5, 23);
