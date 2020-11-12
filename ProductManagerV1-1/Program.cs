@@ -9,25 +9,18 @@ namespace ProductManagerV1_1
 {
     class Program
     {
+        //private static readonly string connectionString =
+        //    @"server=SAIID-PC\SQL19; database=WebMagasin; Integrated Security=SSPI";
+
         private static readonly string connectionString =
-            @"server=SAIID-PC\SQL19; database=WebMagasin; Integrated Security=SSPI";
+            @"server=.; database=WebMagasin; Integrated Security=SSPI";
+
 
         static void Main()
         {
 
             int left = 2;
             int top = 3;
-
-
-
-
-
-            //Console.ReadLine();
-
-            //Console.SetCursorPosition(45, 14);
-            //Console.WriteLine("I am out");
-
-            //Console.ReadLine();
 
             bool leaveHeadMenu = false;
 
