@@ -9,16 +9,12 @@ namespace ProductManagerV1_1
 {
     class Program
     {
-        //private static readonly string connectionString =
-        //    @"server=SAIID-PC\SQL19; database=WebMagasin; Integrated Security=SSPI";
-
         private static readonly string connectionString =
-            @"server=.; database=WebMagasin; Integrated Security=SSPI";
+            @"server=SAIID-PC\SQL19; database=WebMagasin; Integrated Security=SSPI";
 
 
         static void Main()
         {
-
             int left = 2;
             int top = 3;
 
@@ -633,7 +629,7 @@ namespace ProductManagerV1_1
 
                                         Console.SetCursorPosition(left, top + 10);
                                         Console.WriteLine($"Would you please confirm the Information above? Y/N ");
-                                        
+
 
                                         Regex confirmRegex = new Regex(@"[YyNn]$");
                                         ConsoleKeyInfo confirm;
@@ -648,9 +644,9 @@ namespace ProductManagerV1_1
                                         Console.SetCursorPosition(left, top + 10);
                                         Console.WriteLine($"                                                     ");
 
-                                        DataSet editDataSet = new DataSet();
+                                        //DataSet editDataSet = new DataSet();
 
-                                        DataRow newDataRow = editDataSet.Tables["Products"].NewRow();
+                                        DataRow newDataRow = dataSet.Tables["Products"].NewRow();
 
                                         newDataRow["ArticleNumber"] = Products.ArticleNumber;
                                         newDataRow["Name"] = Products.Name;
@@ -718,7 +714,7 @@ namespace ProductManagerV1_1
                                                     articleIndex = dataSet.Tables["Products"].Rows.IndexOf(dataRow);
                                                     break;
                                                 }
-                                                
+
                                             }
 
                                             if (articleIndex == -1)
@@ -964,7 +960,7 @@ namespace ProductManagerV1_1
 
                                             }
 
-                                            
+
                                         }
                                         else
                                         {
